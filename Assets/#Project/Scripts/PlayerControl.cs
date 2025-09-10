@@ -30,6 +30,7 @@ public class PlayerControl : MonoBehaviour
     void Update()
     {
         MoveX();
+        MoveZ();
     }
 
     private void MoveX()
@@ -37,5 +38,10 @@ public class PlayerControl : MonoBehaviour
         float xMove = xAxis.ReadValue<float>();
         transform.position += speed * Time.deltaTime * xMove * transform.right;
 
+    }
+
+    private void MoveZ()
+    {
+        transform.position += speed * Time.deltaTime * transform.forward;
     }
 }
