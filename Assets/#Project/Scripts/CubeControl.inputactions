@@ -9,7 +9,16 @@
                     "name": "XAxis",
                     "type": "Button",
                     "id": "2a2a59da-fde1-4f81-ad7a-11631e8f3acb",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "YAxis",
+                    "type": "Button",
+                    "id": "ebf8197e-1564-4814-ba01-12ba3ca8a303",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -41,7 +50,7 @@
                 {
                     "name": "negative",
                     "id": "10dac793-cd35-45ee-ac9a-4ff470abe4ad",
-                    "path": "<Keyboard>/q",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -68,6 +77,39 @@
                     "processors": "",
                     "groups": "",
                     "action": "XAxis",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "1D Axis",
+                    "id": "b6f2c69f-fbe4-4b83-a634-76e9c83f29cf",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "YAxis",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "8c2720ba-6d6d-4d4e-a7fd-1cf47d1dbd9b",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "YAxis",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "b3088aff-9f60-4ac0-a5c0-125d2fe027a5",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "YAxis",
                     "isComposite": false,
                     "isPartOfComposite": true
                 }
