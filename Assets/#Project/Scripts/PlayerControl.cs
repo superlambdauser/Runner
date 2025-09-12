@@ -16,9 +16,11 @@ public class PlayerControl : MonoBehaviour
     private InputAction xAxis;
     private InputAction yAxis;
     private Rigidbody rb;
+    private Vector3 startingPosition;
     private bool isJumping = false;
     private float xMove;
     private float yMove;
+
 
     void Awake()
     {
@@ -26,18 +28,14 @@ public class PlayerControl : MonoBehaviour
         xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
         yAxis = actions.FindActionMap("CubeActionsMap").FindAction("YAxis");
     }
-
     void OnEnable()
     {
         actions.FindActionMap("CubeActionsMap").Enable();
     }
-
     void OnDisable()
     {
         actions.FindActionMap("CubeActionsMap").Disable();
     }
-
-
     void Update() //Inputs, UI, Cameras
     {
         xMove = xAxis.ReadValue<float>();
@@ -45,30 +43,46 @@ public class PlayerControl : MonoBehaviour
 
         Jump();
     }
-
     void FixedUpdate() //Physics (Rigidbody)
     {
         Move();
     }
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("check 1 --- Collided with: " + collision.gameObject.name);
+        if (collision.gameObject.CompareTag("Road"))
+        {
+            Debug.Log("check 2 --- Collided with: " + collision.gameObject.name);
+            isJumping = false;
+        }
+    }
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Road"))
+        {
+            ResetPosition(); // Reset position, when player falls from the platform 
+        }
+    }
 
-    // private void MoveX()
-    // {
-    //     float xMove = xAxis.ReadValue<float>();
-    //     transform.position += speed * Time.deltaTime * xMove * transform.right;
 
-    // }
+    public void Initialize(Vector3 startingPosition)
+    {
+        this.startingPosition = startingPosition;
+    }
+    public void SetPosition(Vector3 position)
+    {
+        rb.MovePosition(position);
+    }
+    public void ResetPosition()
+    {
+        SetPosition(startingPosition);
+    }
 
-    // private void MoveZ()
-    // {
-    //     transform.position += speed * Time.deltaTime * transform.forward;
-    // }
-
-    void Move()
+    private void Move()
     {
         Vector3 xzMovement = (transform.right * xMove + transform.forward) * speed * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + xzMovement);
     }
-
     private void Jump()
     {
         if (isJumping == false && yMove > 0)
@@ -80,13 +94,5 @@ public class PlayerControl : MonoBehaviour
         }
 
     }
-    void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log("check 1 --- Collided with: " + collision.gameObject.name);
-        if (collision.gameObject.CompareTag("Road"))
-        {
-            Debug.Log("check 2 --- Collided with: " + collision.gameObject.name);
-            isJumping = false;
-        }
-    }
+
 }
