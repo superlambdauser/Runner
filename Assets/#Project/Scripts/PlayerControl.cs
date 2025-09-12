@@ -68,6 +68,10 @@ public class PlayerControl : MonoBehaviour
     public void Initialize(Vector3 startingPosition)
     {
         this.startingPosition = startingPosition;
+
+        isJumping = false;
+        
+        SetPosition(startingPosition);
     }
     public void SetPosition(Vector3 position)
     {
