@@ -53,14 +53,9 @@ public class PlayerControl : MonoBehaviour
         {
             Reset();
             // Ideally "You Win ! Retry ?"
-        }
-
-        Debug.Log($"UPDATE DATA -- jumping ? {isJumping} - speed = {speed}");
-        
+        }   
     }
-    // void FixedUpdate() // Physics (Rigidbody)
-    // {
-    // }
+
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Obstacle"))

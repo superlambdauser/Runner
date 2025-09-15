@@ -68,7 +68,7 @@ public class GameInitializer : MonoBehaviour
 
                 z += OBSTACLESIZE + zGap;
             }
-        } while (z < roadLength / 2);
+        } while (z < finishLine - OBSTACLEZSTART); // Okay problem not understood not fixed but UX better so.....
 
         Debug.Log($"z = {z} | roadlength = {roadLength}");
     }
