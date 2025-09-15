@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class ObstaclesManager : MonoBehaviour
 {
-    [SerializeField] PlayerControl player;
+
     private List<ObstaclesBehaviour> obstacles;
 
 
     public void ObstacleCollision()
     {
-        player.ResetPosition();
+
     }
-    public void Initialize(List<ObstaclesBehaviour> obstacles)
+    public void Initialize(List<ObstaclesBehaviour> obstacles, PlayerControl player)
     {
         this.obstacles = obstacles;
     }

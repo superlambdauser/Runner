@@ -11,7 +11,7 @@ public class PlayerControl : MonoBehaviour
     public float speed = 1f;
 
     [SerializeField] float jumpSpeed = 5f;
-    [SerializeField] float jumpHeight = 2f;
+    // [SerializeField] float jumpHeight = 2f;
     [SerializeField] Collider road;
     private InputAction xAxis;
     private InputAction yAxis;
@@ -22,12 +22,6 @@ public class PlayerControl : MonoBehaviour
     private float yMove;
 
 
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-        xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
-        yAxis = actions.FindActionMap("CubeActionsMap").FindAction("YAxis");
-    }
     void OnEnable()
     {
         actions.FindActionMap("CubeActionsMap").Enable();
@@ -50,6 +44,10 @@ public class PlayerControl : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log("check 1 --- Collided with: " + collision.gameObject.name);
+        if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            ResetPosition();
+        }
         if (collision.gameObject.CompareTag("Road"))
         {
             Debug.Log("check 2 --- Collided with: " + collision.gameObject.name);
@@ -60,13 +58,16 @@ public class PlayerControl : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Road"))
         {
-            ResetPosition(); // Reset position, when player falls from the platform 
+            ResetPosition(); // Reset position when player falls from the platform 
         }
     }
 
 
     public void Initialize(Vector3 startingPosition)
     {
+        xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
+        yAxis = actions.FindActionMap("CubeActionsMap").FindAction("YAxis");
+
         this.startingPosition = startingPosition;
 
         isJumping = false;
@@ -75,6 +76,7 @@ public class PlayerControl : MonoBehaviour
     }
     public void SetPosition(Vector3 position)
     {
+        rb = GetComponent<Rigidbody>();
         rb.MovePosition(position);
     }
     public void ResetPosition()

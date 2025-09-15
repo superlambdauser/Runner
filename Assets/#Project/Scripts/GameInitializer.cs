@@ -16,24 +16,19 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private Transform road;
     [SerializeField] private Vector3 startingPlayerPosition;
     [SerializeField] private float zGap = 0.5f;
+    private List<ObstaclesBehaviour> obstacles = new();
     private float roadLength;
     private float roadWidth;
-    private List<ObstaclesBehaviour> obstacles = new();
 
 
     void Start()
     {
         roadLength = road.localScale.z * 10; // Plane is a 10x10 units game object -> scale.z * 2 = 20 units long
         roadWidth = road.localScale.x * 10;
-        startingPlayerPosition = new Vector3(road.position.x, road.position.y + PLAYERSIZE / 2, 0 - (roadLength/2) + PLAYERZSTART);
+        startingPlayerPosition = new Vector3(road.position.x, road.position.y + PLAYERSIZE / 2, 0 - (roadLength / 2) + PLAYERZSTART);
 
         GenerateRunner();
         InitializeObjects();
-    }
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
 
@@ -46,24 +41,26 @@ public class GameInitializer : MonoBehaviour
     {
         // also must init road 
         player.Initialize(startingPlayerPosition);
-        obstaclesManager.Initialize(obstacles);
+        obstaclesManager.Initialize(obstacles, player);
     }
     private ObstaclesBehaviour GenerateObstacle(Vector3 clonePosition)
     {
         ObstaclesBehaviour obstacleClone = Instantiate(obstaclePrefab, clonePosition, Quaternion.identity);
+        obstacleClone.Initialize(obstaclesManager);
         return obstacleClone;
     }
-    private void GenerateRunner()
+
+    void GenerateObstacles()
     {
         Vector3 position;
         position.y = road.position.y + OBSTACLESIZE / 2;
-        float z = OBSTACLEZSTART;
+        float z = -roadLength / 2 + OBSTACLEZSTART;
 
         do
         {
-            for (float i = -roadWidth/2 + OBSTACLEXGAP; i < roadWidth - OBSTACLEXGAP; i += OBSTACLESIZE + OBSTACLEXGAP)
+            for (float i = -roadWidth / 2; i < roadWidth / 2; i += OBSTACLESIZE + OBSTACLEXGAP)
             {
-                float rnd = Random.Range(-roadWidth/2 + OBSTACLESIZE/2, roadWidth/2 - OBSTACLESIZE/2);
+                float rnd = Random.Range(-roadWidth / 2 + OBSTACLESIZE / 2, roadWidth / 2 - OBSTACLESIZE / 2);
                 position.x = rnd;
                 position.z = z;
 
@@ -71,8 +68,14 @@ public class GameInitializer : MonoBehaviour
 
                 z += OBSTACLESIZE + zGap;
             }
-        } while (z < roadLength);
+        } while (z < roadLength / 2);
 
+        Debug.Log($"z = {z} | roadlength = {roadLength}");
+    }
+
+    private void GenerateRunner()
+    {
+        GenerateObstacles();
         InstantiateObjects();
     }
 }
