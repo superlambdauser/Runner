@@ -20,6 +20,7 @@ public class PlayerControl : MonoBehaviour
     private bool isJumping = false;
     private float xMove;
     private float yMove;
+    private float finishLine;
 
 
     void OnEnable()
@@ -30,17 +31,25 @@ public class PlayerControl : MonoBehaviour
     {
         actions.FindActionMap("CubeActionsMap").Disable();
     }
-    void Update() //Inputs, UI, Cameras
+    void Update() // Inputs, UI, Cameras
     {
         xMove = xAxis.ReadValue<float>();
         yMove = yAxis.ReadValue<float>();
 
-        Jump();
+        if (rb.position.z <= finishLine) // Keeps moving unless reached the finish line.
+        {
+            Move();
+
+            if (isJumping == false && yMove > 0)
+            {
+            Jump();
+            }
+        }
+        
     }
-    void FixedUpdate() //Physics (Rigidbody)
-    {
-        Move();
-    }
+    // void FixedUpdate() // Physics (Rigidbody)
+    // {
+    // }
     void OnCollisionEnter(Collision collision)
     {
         Debug.Log("check 1 --- Collided with: " + collision.gameObject.name);
@@ -56,19 +65,20 @@ public class PlayerControl : MonoBehaviour
     }
     void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Road"))
+        if (collision.gameObject.CompareTag("Road") && isJumping == false)
         {
             ResetPosition(); // Reset position when player falls from the platform 
         }
     }
 
 
-    public void Initialize(Vector3 startingPosition)
+    public void Initialize(Vector3 startingPosition, float finishLine)
     {
         xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
         yAxis = actions.FindActionMap("CubeActionsMap").FindAction("YAxis");
 
         this.startingPosition = startingPosition;
+        this.finishLine = finishLine;
 
         isJumping = false;
         
@@ -91,13 +101,9 @@ public class PlayerControl : MonoBehaviour
     }
     private void Jump()
     {
-        if (isJumping == false && yMove > 0)
-        {
-
-            isJumping = true;
-            Debug.Log($"jumping ? {isJumping} -- yMove : {yMove}");
-            rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
-        }
+        rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+        isJumping = true;
+        Debug.Log($"jumping ? {isJumping} -- yMove : {yMove}");
 
     }
 

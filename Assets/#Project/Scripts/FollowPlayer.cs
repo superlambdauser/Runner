@@ -4,8 +4,8 @@ using UnityEngine;
 public class FollowPlayer : MonoBehaviour
 {
     [SerializeField] private Transform player;
-    [SerializeField] private float distance = 5;
-    [SerializeField] private float cameraHeight = 3;
+    [SerializeField] private float distanceFromPlayer = 5f;
+    [SerializeField] private float cameraHeight = 3f;
 
     public void Initialize(Transform player)
     {
@@ -15,7 +15,7 @@ public class FollowPlayer : MonoBehaviour
     }
     public void Follow()
     {
-        transform.position = new Vector3 (player.position.x, cameraHeight, player.position.z - distance);
+        transform.position = new Vector3 (player.position.x, cameraHeight, player.position.z - distanceFromPlayer);
     }
     void Update()
     {
