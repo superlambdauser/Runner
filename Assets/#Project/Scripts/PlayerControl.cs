@@ -8,7 +8,7 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     public InputActionAsset actions;
-    public float speed = 1f;
+    public float startingSpeed = 1f;
 
     [SerializeField] float jumpSpeed = 5f;
     // [SerializeField] float jumpHeight = 2f;
@@ -42,9 +42,11 @@ public class PlayerControl : MonoBehaviour
 
             if (isJumping == false && yMove > 0)
             {
-            Jump();
+                Jump();
             }
         }
+
+        Debug.Log($"UPDATE DATA -- {isJumping}");
         
     }
     // void FixedUpdate() // Physics (Rigidbody)
@@ -52,14 +54,12 @@ public class PlayerControl : MonoBehaviour
     // }
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("check 1 --- Collided with: " + collision.gameObject.name);
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            ResetPosition();
+            Reset();
         }
         if (collision.gameObject.CompareTag("Road"))
         {
-            Debug.Log("check 2 --- Collided with: " + collision.gameObject.name);
             isJumping = false;
         }
     }
@@ -67,7 +67,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Road") && isJumping == false)
         {
-            ResetPosition(); // Reset position when player falls from the platform 
+            Reset(); // Reset position when player falls from the platform 
         }
     }
 
@@ -89,21 +89,22 @@ public class PlayerControl : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.MovePosition(position);
     }
-    public void ResetPosition()
+    public void Reset()
     {
         SetPosition(startingPosition);
+        isJumping = false;
     }
 
     private void Move()
     {
-        Vector3 xzMovement = (transform.right * xMove + transform.forward) * speed * Time.fixedDeltaTime;
+        Vector3 xzMovement = (transform.right * xMove + transform.forward) * startingSpeed * Time.deltaTime;
         rb.MovePosition(rb.position + xzMovement);
     }
     private void Jump()
     {
         rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
         isJumping = true;
-        Debug.Log($"jumping ? {isJumping} -- yMove : {yMove}");
+        Debug.Log($"JUMP BUTTON PRESSED. DATA : isJumping : {isJumping} -- yMove : {yMove}");
 
     }
 
