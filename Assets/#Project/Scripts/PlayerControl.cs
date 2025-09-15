@@ -10,6 +10,7 @@ public class PlayerControl : MonoBehaviour
     public InputActionAsset actions;
     public float startingSpeed = 1f;
 
+    [SerializeField] float speedIncrease = 0.2f;
     [SerializeField] float jumpSpeed = 5f;
     // [SerializeField] float jumpHeight = 2f;
     [SerializeField] Collider road;
@@ -18,6 +19,7 @@ public class PlayerControl : MonoBehaviour
     private Rigidbody rb;
     private Vector3 startingPosition;
     private bool isJumping = false;
+    private float speed;
     private float xMove;
     private float yMove;
     private float finishLine;
@@ -40,13 +42,20 @@ public class PlayerControl : MonoBehaviour
         {
             Move();
 
+            speed += speedIncrease * Time.deltaTime;
+
             if (isJumping == false && yMove > 0)
             {
                 Jump();
             }
         }
+        else
+        {
+            Reset();
+            // Ideally "You Win ! Retry ?"
+        }
 
-        Debug.Log($"UPDATE DATA -- {isJumping}");
+        Debug.Log($"UPDATE DATA -- jumping ? {isJumping} - speed = {speed}");
         
     }
     // void FixedUpdate() // Physics (Rigidbody)
@@ -80,6 +89,7 @@ public class PlayerControl : MonoBehaviour
         this.startingPosition = startingPosition;
         this.finishLine = finishLine;
 
+        speed = startingSpeed;
         isJumping = false;
         
         SetPosition(startingPosition);
@@ -91,13 +101,15 @@ public class PlayerControl : MonoBehaviour
     }
     public void Reset()
     {
-        SetPosition(startingPosition);
+        speed = startingSpeed;
         isJumping = false;
+
+        SetPosition(startingPosition);
     }
 
     private void Move()
     {
-        Vector3 xzMovement = (transform.right * xMove + transform.forward) * startingSpeed * Time.deltaTime;
+        Vector3 xzMovement = (transform.right * xMove + transform.forward) * speed * Time.deltaTime;
         rb.MovePosition(rb.position + xzMovement);
     }
     private void Jump()
