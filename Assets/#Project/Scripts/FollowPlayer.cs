@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class FollowPlayer : MonoBehaviour
@@ -7,17 +6,29 @@ public class FollowPlayer : MonoBehaviour
     [SerializeField] private float distanceFromPlayer = 5f;
     [SerializeField] private float cameraHeight = 3f;
 
+
     public void Initialize(Transform player)
     {
         this.player = player;
 
         Follow();
     }
+
     public void Follow()
     {
-        transform.position = new Vector3 (player.position.x, cameraHeight, player.position.z - distanceFromPlayer);
+        transform.position = new Vector3 (0, cameraHeight, player.position.z - distanceFromPlayer);
     }
-    void Update()
+
+
+    void Start()
+    {
+        if (player == null)
+        {
+            GameObject.FindFirstObjectByType<PlayerControl>();
+        }
+    }
+
+    public void Process()
     {
         Follow();
     }

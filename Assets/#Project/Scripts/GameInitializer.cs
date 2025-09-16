@@ -12,6 +12,7 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private ObstaclesBehaviour obstaclePrefab;
     [SerializeField] private FollowPlayer followingCamera;
     [SerializeField] private PlayerControl player;
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private Transform road;
     [SerializeField] private Vector3 startingPlayerPosition;
     [SerializeField] private float zGap = 0.5f;
@@ -37,12 +38,15 @@ public class GameInitializer : MonoBehaviour
         // Point at the Scene instance of obstacleManager instead of the prefab
         player = Instantiate(player);
         followingCamera = Instantiate(followingCamera);
+        gameManager = Instantiate(gameManager);
+        Instantiate(road); // The road does not need arguments -> no initialization -> no instantiation like the other objects.
     }
     private void InitializeObjects()
     {
         // also must init road 
         player.Initialize(startingPlayerPosition, finishLine);
         followingCamera.Initialize(player.GetComponent<Transform>());
+        gameManager.Initialize(player, followingCamera);
     }
     private ObstaclesBehaviour GenerateObstacle(Vector3 clonePosition)
     {
@@ -56,7 +60,7 @@ public class GameInitializer : MonoBehaviour
         position.y = road.position.y + OBSTACLESIZE / 2;
         float z = -roadLength / 2 + OBSTACLEZSTART;
 
-        do
+        while (z < finishLine)
         {
             for (float i = -roadWidth / 2; i < roadWidth / 2; i += OBSTACLESIZE + OBSTACLEXGAP)
             {
@@ -65,12 +69,13 @@ public class GameInitializer : MonoBehaviour
                 position.z = z;
 
                 obstacles.Add(GenerateObstacle(position));
-
                 z += OBSTACLESIZE + zGap;
-            }
-        } while (z < finishLine - OBSTACLEZSTART); // Okay problem not understood not fixed but UX better so.....
 
-        Debug.Log($"z = {z} | roadlength = {roadLength}");
+                if(z >= finishLine) break; // Not optimal... Rethink the while loop as a for loop
+            }
+        }
+
+        Debug.Log($"z = {z} | roadlength = {roadLength} | finishLine = {finishLine} ");
     }
 
     private void GenerateRunner()
