@@ -4,19 +4,39 @@ using UnityEngine;
 
 public class GameInitializer : MonoBehaviour
 {
+    [Header("Game Data")]
+    [SerializeField] private GameData gameData;
+
+
+    [Header("Constants")]
     const float OBSTACLESIZE = 1f;
     const float PLAYERSIZE = 1f;
     const float OBSTACLEXGAP = 0.5f;
     const float PLAYERZSTART = 5f;
     const float OBSTACLEZSTART = PLAYERZSTART + 3f;
-    [SerializeField] private ObstaclesBehaviour obstaclePrefab;
-    [SerializeField] private FollowPlayer followingCamera;
-    [SerializeField] private PlayerControl player;
+
+
+    [Header("Game Manager")]
     [SerializeField] private GameManager gameManager;
-    [SerializeField] private Transform road;
+
+
+    [Header("Player")]
+    [SerializeField] private PlayerControl player;
     [SerializeField] private Vector3 startingPlayerPosition;
-    [SerializeField] private float zGap = 0.5f;
+
+
+    [Header("Obstacles")]
+    [SerializeField] private ObstaclesBehaviour obstaclePrefab;
     private List<ObstaclesBehaviour> obstacles = new();
+
+
+    [Header("Camera")]
+    [SerializeField] private FollowPlayer followingCamera;
+
+
+    [Header("Road")]
+    [SerializeField] private Transform road;
+    [SerializeField] private float zGap = 0.5f;
     private float roadLength;
     private float roadWidth;
     private float finishLine;
@@ -44,8 +64,8 @@ public class GameInitializer : MonoBehaviour
     private void InitializeObjects()
     {
         // also must init road 
-        player.Initialize(startingPlayerPosition, finishLine);
-        followingCamera.Initialize(player.GetComponent<Transform>());
+        player.Initialize(startingPlayerPosition, finishLine, gameData.Player.StartingSpeed, gameData.Player.SpeedIncrease, gameData.Player.JumpSpeed);
+        followingCamera.Initialize(player.GetComponent<Transform>(), gameData.Camera.DistanceFromPlayer, gameData.Camera.Height);
         gameManager.Initialize(player, followingCamera);
     }
     private ObstaclesBehaviour GenerateObstacle(Vector3 clonePosition)

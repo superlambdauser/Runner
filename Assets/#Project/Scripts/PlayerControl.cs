@@ -9,9 +9,9 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeField] InputActionAsset actions;
     [SerializeField] Collider road;
-    [SerializeField] float startingSpeed = 1f;
-    [SerializeField] float speedIncrease = 0.2f;
-    [SerializeField] float jumpSpeed = 5f;
+    [SerializeField] float startingSpeed;
+    [SerializeField] float speedIncrease;
+    [SerializeField] float jumpSpeed;
     [SerializeField] float sweetSpotForReset = 0.5f;
     // [SerializeField] float jumpHeight = 2f;
     private InputAction xAxis;
@@ -23,12 +23,15 @@ public class PlayerControl : MonoBehaviour
     private float finishLine;
 
 
-    public void Initialize(Vector3 startingPosition, float finishLine)
+    public void Initialize(Vector3 startingPosition, float finishLine, float startingSpeed, float speedIncrease, float jumpSpeed)
     {
         xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
 
         this.startingPosition = startingPosition;
         this.finishLine = finishLine;
+        this.startingSpeed = startingSpeed;
+        this.speedIncrease = speedIncrease;
+        this.jumpSpeed = jumpSpeed;
 
         speed = startingSpeed;
         isJumping = false;
