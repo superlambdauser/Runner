@@ -7,47 +7,58 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    public InputActionAsset actions;
-    public float startingSpeed = 1f;
-
-    [SerializeField] float speedIncrease = 0.2f;
-    [SerializeField] float jumpSpeed = 5f;
-    // [SerializeField] float jumpHeight = 2f;
+    [SerializeField] InputActionAsset actions;
     [SerializeField] Collider road;
+    [SerializeField] float startingSpeed;
+    [SerializeField] float speedIncrease;
+    [SerializeField] float jumpSpeed;
+    [SerializeField] float sweetSpotForReset = 0.5f;
+    // [SerializeField] float jumpHeight = 2f;
     private InputAction xAxis;
-    private InputAction yAxis;
     private Rigidbody rb;
     private Vector3 startingPosition;
     private bool isJumping = false;
     private float speed;
     private float xMove;
-    private float yMove;
     private float finishLine;
+
+
+    public void Initialize(Vector3 startingPosition, float finishLine, float startingSpeed, float speedIncrease, float jumpSpeed)
+    {
+        xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
+
+        this.startingPosition = startingPosition;
+        this.finishLine = finishLine;
+        this.startingSpeed = startingSpeed;
+        this.speedIncrease = speedIncrease;
+        this.jumpSpeed = jumpSpeed;
+
+        speed = startingSpeed;
+        isJumping = false;
+        
+        SetPosition(startingPosition);
+    }
 
 
     void OnEnable()
     {
         actions.FindActionMap("CubeActionsMap").Enable();
+        actions.FindActionMap("CubeActionsMap").FindAction("YAxis").performed += Jump; // This detects when the button of the action map is pressed and links it to the function to execute (here : Jump)
     }
+
     void OnDisable()
     {
         actions.FindActionMap("CubeActionsMap").Disable();
+        actions.FindActionMap("CubeActionsMap").FindAction("YAxis").performed -= Jump;
     }
-    void Update() // Inputs, UI, Cameras
-    {
-        xMove = xAxis.ReadValue<float>();
-        yMove = yAxis.ReadValue<float>();
 
-        if (rb.position.z <= finishLine) // Keeps moving unless reached the finish line.
+    public void Process() // Inputs, UI, Cameras
+    {   
+        if (rb.position.z <= finishLine && rb.position.y > startingPosition.y-sweetSpotForReset) // Keeps moving unless reached the finish line.
         {
             Move();
 
             speed += speedIncrease * Time.deltaTime;
-
-            if (isJumping == false && yMove > 0)
-            {
-                Jump();
-            }
         }
         else
         {
@@ -58,61 +69,56 @@ public class PlayerControl : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
+        if (collision.collider.CompareTag("Obstacle"))
         {
             Reset();
         }
-        if (collision.gameObject.CompareTag("Road"))
+        if (collision.collider.CompareTag("Road"))
         {
             isJumping = false;
         }
     }
+
     void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Road") && isJumping == false)
+        if (isJumping == false)
         {
-            Reset(); // Reset position when player falls from the platform 
+            if (collision.gameObject.CompareTag("Road"))
+            {
+                Reset(); // Reset position when player falls from the platform 
+            }
         }
     }
 
-
-    public void Initialize(Vector3 startingPosition, float finishLine)
+    private void Reset()
     {
-        xAxis = actions.FindActionMap("CubeActionsMap").FindAction("XAxis");
-        yAxis = actions.FindActionMap("CubeActionsMap").FindAction("YAxis");
-
-        this.startingPosition = startingPosition;
-        this.finishLine = finishLine;
-
         speed = startingSpeed;
         isJumping = false;
-        
+
         SetPosition(startingPosition);
     }
-    public void SetPosition(Vector3 position)
+
+    private void SetPosition(Vector3 position)
     {
         rb = GetComponent<Rigidbody>();
         rb.MovePosition(position);
     }
-    public void Reset()
-    {
-        speed = startingSpeed;
-        isJumping = false;
-
-        SetPosition(startingPosition);
-    }
 
     private void Move()
     {
-        Vector3 xzMovement = (transform.right * xMove + transform.forward) * speed * Time.deltaTime;
+        xMove = xAxis.ReadValue<float>();
+
+        Vector3 xzMovement = (transform.right * xMove + transform.forward) * speed * Time.deltaTime; // Moves on the x axis from xMove units and keeps going forward at a certain speed
         rb.MovePosition(rb.position + xzMovement);
     }
-    private void Jump()
+
+    private void Jump(InputAction.CallbackContext callbackContext)
     {
-        rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+        if (isJumping == false)
+        {
+        rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse); // Impulse gives Newtons/sec. and calculates the mass of the body   =/=   Acceleration that gives Newtons solo and don't takes mass in consideration 
         isJumping = true;
-        Debug.Log($"JUMP BUTTON PRESSED. DATA : isJumping : {isJumping} -- yMove : {yMove}");
-
+        Debug.Log($"JUMP BUTTON PRESSED. DATA : isJumping : {isJumping}");
+        }
     }
-
 }

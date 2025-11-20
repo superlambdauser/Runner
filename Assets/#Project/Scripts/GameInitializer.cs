@@ -4,18 +4,39 @@ using UnityEngine;
 
 public class GameInitializer : MonoBehaviour
 {
+    [Header("Game Data")]
+    [SerializeField] private GameData gameData;
+
+
+    [Header("Constants")]
     const float OBSTACLESIZE = 1f;
     const float PLAYERSIZE = 1f;
     const float OBSTACLEXGAP = 0.5f;
     const float PLAYERZSTART = 5f;
     const float OBSTACLEZSTART = PLAYERZSTART + 3f;
-    [SerializeField] private ObstaclesBehaviour obstaclePrefab;
-    [SerializeField] private FollowPlayer followingCamera;
+
+
+    [Header("Game Manager")]
+    [SerializeField] private GameManager gameManager;
+
+
+    [Header("Player")]
     [SerializeField] private PlayerControl player;
-    [SerializeField] private Transform road;
     [SerializeField] private Vector3 startingPlayerPosition;
-    [SerializeField] private float zGap = 0.5f;
+
+
+    [Header("Obstacles")]
+    [SerializeField] private ObstaclesBehaviour obstaclePrefab;
     private List<ObstaclesBehaviour> obstacles = new();
+
+
+    [Header("Camera")]
+    [SerializeField] private FollowPlayer followingCamera;
+
+
+    [Header("Road")]
+    [SerializeField] private Transform road;
+    [SerializeField] private float zGap = 0.5f;
     private float roadLength;
     private float roadWidth;
     private float finishLine;
@@ -37,12 +58,15 @@ public class GameInitializer : MonoBehaviour
         // Point at the Scene instance of obstacleManager instead of the prefab
         player = Instantiate(player);
         followingCamera = Instantiate(followingCamera);
+        gameManager = Instantiate(gameManager);
+        Instantiate(road); // The road does not need arguments -> no initialization -> no instantiation like the other objects.
     }
     private void InitializeObjects()
     {
         // also must init road 
-        player.Initialize(startingPlayerPosition, finishLine);
-        followingCamera.Initialize(player.GetComponent<Transform>());
+        player.Initialize(startingPlayerPosition, finishLine, gameData.Player.StartingSpeed, gameData.Player.SpeedIncrease, gameData.Player.JumpSpeed);
+        followingCamera.Initialize(player.GetComponent<Transform>(), gameData.Camera.DistanceFromPlayer, gameData.Camera.Height);
+        gameManager.Initialize(player, followingCamera);
     }
     private ObstaclesBehaviour GenerateObstacle(Vector3 clonePosition)
     {
@@ -56,7 +80,7 @@ public class GameInitializer : MonoBehaviour
         position.y = road.position.y + OBSTACLESIZE / 2;
         float z = -roadLength / 2 + OBSTACLEZSTART;
 
-        do
+        while (z < finishLine)
         {
             for (float i = -roadWidth / 2; i < roadWidth / 2; i += OBSTACLESIZE + OBSTACLEXGAP)
             {
@@ -65,12 +89,13 @@ public class GameInitializer : MonoBehaviour
                 position.z = z;
 
                 obstacles.Add(GenerateObstacle(position));
-
                 z += OBSTACLESIZE + zGap;
-            }
-        } while (z < finishLine - OBSTACLEZSTART); // Okay problem not understood not fixed but UX better so.....
 
-        Debug.Log($"z = {z} | roadlength = {roadLength}");
+                if(z >= finishLine) break; // Not optimal... Rethink the while loop as a for loop
+            }
+        }
+
+        Debug.Log($"z = {z} | roadlength = {roadLength} | finishLine = {finishLine} ");
     }
 
     private void GenerateRunner()

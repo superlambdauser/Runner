@@ -150,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actions: {fileID: -944628639613478452, guid: ac3896e91c55b244097cd072d966bea5, type: 3}
-  startingSpeed: 1
-  jumpSpeed: 6
   road: {fileID: 4473871953594812888, guid: a6948b68060093546b5aa13f503cc93f, type: 3}
+  startingSpeed: 1.5
+  speedIncrease: 0.2
+  jumpSpeed: 6
